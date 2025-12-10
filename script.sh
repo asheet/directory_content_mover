@@ -141,5 +141,24 @@ main() {
     echo "========================================="
 }
 
-# Run main function
-main "$@"
+# Get source directory (default to current directory)
+source_dir="${1:-.}"
+source_dir="$(cd "$source_dir" && pwd)"
+
+# Count folders (excluding 'abc' if it exists)
+folder_count=$(find "$source_dir" -maxdepth 1 -mindepth 1 -type d ! -name "abc" | wc -l)
+# Trim whitespace from wc output
+folder_count=$(echo "$folder_count" | tr -d ' ')
+
+echo -e "${YELLOW}Found $folder_count directories to process${NC}"
+echo ""
+
+# Run main function for each folder
+for ((i=1; i<=folder_count; i++)); do
+    echo ""
+    echo -e "${GREEN}================== RUN $i of $folder_count ==================${NC}"
+    main "$@"
+done
+
+echo ""
+echo -e "${GREEN}All iterations complete!${NC}"
